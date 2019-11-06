@@ -1,2 +1,28 @@
+*.iml
 *.class
 *.log
+target/
+project/target/
+project/boot/
+dist/
+boot/
+logs/
+out/
+tmp/
+projectFilesBackup/
+.history/
+.idea/
+.idea_modules/
+.DS_STORE
+.cache
+.settings
+.project
+.classpath
+version.properties
+RUNNING_PID
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
