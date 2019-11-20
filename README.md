@@ -12,7 +12,7 @@ The recommended way to install the library for Android is with a build system li
 
 ```groovy
 dependencies {
-  implementation 'com.curalate.android:curalate-android-sdk:0.1.0'
+  implementation 'com.curalate:curalate-android-sdk:0.1.1'
 }
 ```
 
@@ -33,7 +33,7 @@ GetMediaRequest request = new GetMediaRequest.Builder()
 
 curalate.getMedia(request, new ApiHandler<GetMediaResult>() {
     @Override
-    public void onSuccess(GetMediaResult mediaApiResult) {
+    public void onSuccess(GetMediaResult result) {
         for (MediaApiItem item : result.getData().getItems()) {
             // Process the item.
         }
