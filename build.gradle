@@ -3,8 +3,10 @@
 //
 
 plugins {
-    // Apply the java-library plugin to add support for Java Library
+    id 'io.codearte.nexus-staging' version '0.21.1'
     id 'java-library'
+    id 'maven-publish'
+    id 'signing'
 }
 
 repositories {
@@ -29,4 +31,88 @@ dependencies {
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
+}
+
+group   = 'com.curalate'
+version = '0.1.2'
+
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier = 'javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'android-sdk'
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+
+            pom {
+                name        = 'Curalate Android SDK'
+                description = "API client to call Curalate's API methods from an Android app (or other project running on the JDK)"
+                url         = 'https://curalate.com'
+
+                licenses {
+                    license {
+                        name = 'The MIT License (MIT)'
+                        url  = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id    = 'curalate_engineering'
+                        name  = 'Curalate Engineering'
+                        email = 'support@curalate.com'
+                    }
+                }
+
+                scm {
+                    connection          = 'scm:git:https://github.com/curalate/curalate-android-sdk'
+                    developerConnection = 'scm:git:https://github.com/curalate/curalate-android-sdk'
+                    url                 = 'https://github.com/curalate/curalate-android-sdk'
+                }
+            }
+        }
+    }
+
+    repositories {
+        // Maven Central
+        maven {
+            def releasesRepoUrl  = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+            url = isReleaseVersion ? releasesRepoUrl : snapshotsRepoUrl
+            credentials {
+                username = nexusUsername
+                password = nexusPassword
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+nexusStaging {
+    username = nexusUsername
+    password = nexusPassword
 }

@@ -26,3 +26,6 @@ RUNNING_PID
 
 # Ignore Gradle build output directory
 build
+
+# Ignore Gradle private values
+gradle.properties
