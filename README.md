@@ -12,7 +12,7 @@ The recommended way to install the library for Android is with a build system li
 
 ```groovy
 dependencies {
-  implementation 'com.curalate:android-sdk:0.1.2'
+  implementation 'com.curalate:android-sdk:0.1.3'
 }
 ```
 
