@@ -12,7 +12,7 @@ The recommended way to install the library for Android is with a build system li
 
 ```groovy
 dependencies {
-  implementation 'com.curalate:android-sdk:0.1.3'
+  implementation 'com.curalate:android-sdk:0.1.4'
 }
 ```
 
@@ -24,8 +24,18 @@ dependencies {
 CuralateApi curalate = new CuralateApi();
 ```
 
-### Fetch content (no filters)
+### Fetch content (w/ synchronous client)
+```java
+GetMediaRequest request = new GetMediaRequest.Builder()
+    .setDataSourceId("<YOUR_DATA_SOURCE_ID>")
+    .build();
+GetMediaResult result = curalate.getMediaSynchronous(request);
+for (MediaApiItem item : result.getData().getItems()) {
+    // Process the item.
+}
+```
 
+### Fetch content (w/ asynchronous client)
 ```java
 GetMediaRequest request = new GetMediaRequest.Builder()
     .setDataSourceId("<YOUR_DATA_SOURCE_ID>")
@@ -38,10 +48,13 @@ curalate.getMedia(request, new ApiHandler<GetMediaResult>() {
             // Process the item.
         }
     }
-
     @Override
-    public void onFailure(Exception exception) {
-        // Handle the exception (either a CuralateApiException or IOException)
+    public void onIOException(IOException exception) {
+        // Handle the IOException
+    }
+    @Override
+    public void onFailure(CuralateApiException exception) {
+        // Handle the CuralateApiException
     }
 });
 ```
@@ -57,4 +70,27 @@ GetMediaRequest request = new GetMediaRequest.Builder()
     .setDataSourceId("<YOUR_DATA_SOURCE_ID>")
     .setFilter(mediaFilter)
     .build();
+```
+
+### Paginate through responses (w/ synchronous client)
+```java
+String bookmark = null;
+int page = 1;
+
+do {
+    GetMediaRequest request = new GetMediaRequest.Builder()
+        .setDataSourceId("<YOUR_DATA_SOURCE_ID>")
+        .setLimit(MAX_ITEMS_PER_REQUEST)
+        .setAfter(bookmark)
+        .build();
+    GetMediaResult result = curalate.getMediaSynchronous(request);
+    for (MediaApiItem item : result.getData().getItems()) {
+        // Process the item.
+    }
+
+    bookmark = (result.getPaging() == null || result.getPaging().getCursors() == null) ?
+        null : result.getPaging().getCursors().getAfter();
+    page++;
+
+} while (page <= MAX_PAGES && bookmark != null);
 ```
