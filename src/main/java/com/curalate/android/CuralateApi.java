@@ -13,6 +13,7 @@ import com.squareup.moshi.Moshi;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 public class CuralateApi {
 
@@ -82,7 +83,7 @@ public class CuralateApi {
         client.newCall(httpRequest).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                handler.onFailure(e);
+                handler.onIOException(e);
             }
 
             @Override
@@ -103,5 +104,38 @@ public class CuralateApi {
                 }
             }
         });
+    }
+
+    public GetMediaResult getMediaSynchronous(GetMediaRequest request) throws CuralateApiException, IOException, InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final CuralateApiException[] exceptionHolder = new CuralateApiException[] { null };
+        final IOException[] ioExceptionHolder = new IOException[] { null };
+        final GetMediaResult[] resultHolder = new GetMediaResult[] { null };
+        getMedia(request, new ApiHandler<GetMediaResult>() {
+            @Override
+            public void onFailure(CuralateApiException e) {
+                exceptionHolder[0] = e;
+                latch.countDown();
+            }
+
+            @Override
+            public void onIOException(IOException e) {
+                ioExceptionHolder[0] = e;
+                latch.countDown();
+            }
+
+            @Override
+            public void onSuccess(GetMediaResult getMediaResult) {
+                resultHolder[0] = getMediaResult;
+                latch.countDown();
+            }
+        });
+        latch.await();
+        if (exceptionHolder[0] != null) {
+            throw exceptionHolder[0];
+        } else if (ioExceptionHolder[0] != null) {
+            throw ioExceptionHolder[0];
+        }
+        return resultHolder[0];
     }
 }
