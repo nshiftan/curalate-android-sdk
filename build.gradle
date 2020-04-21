@@ -19,16 +19,16 @@ repositories {
 dependencies {
 
     // We use OkHttp for networking and Moshi for JSON deserialization
-    implementation 'com.squareup.okhttp3:okhttp:4.0.1'
-    implementation 'com.squareup.moshi:moshi:1.9.1'
-    implementation 'com.squareup.moshi:moshi-adapters:1.9.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.5.0'
+    implementation 'com.squareup.moshi:moshi:1.9.2'
+    implementation 'com.squareup.moshi:moshi-adapters:1.9.2'
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
 }
 
 group   = 'com.curalate'
-version = '0.1.4'
+version = '0.1.5'
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
